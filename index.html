@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KKIP Portfolio Manager PRO</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hdr">
+    <div class="hdr__top">
+      <div>
+        <div class="hdr__title">KKIP Portfolio Manager PRO</div>
+        <div class="hdr__sub">Interní nástroj • bez přihlášení • ukládá do zařízení</div>
+      </div>
+      <div class="hdr__badge">KKIP</div>
+    </div>
+    <div class="hdr__biz">
+      <strong>Martina Tea Norman</strong> • 724 307 822 •
+      <a href="mailto:martina.tea.norman@kkip.cz">martina.tea.norman@kkip.cz</a>
+    </div>
+  </header>
+
+  <main class="wrap grid">
+    <section class="card">
+      <h2>Klient a nastavení</h2>
+
+      <div class="row cols3">
+        <div>
+          <label>Jméno klienta</label>
+          <input id="clientName" placeholder="Např. Jan Novák" />
+        </div>
+        <div>
+          <label>Horizont (roky)</label>
+          <input id="years" type="number" min="1" max="50" value="10" />
+        </div>
+        <div>
+          <label>Spořicí účet (% p.a.)</label>
+          <input id="savingsRate" type="number" step="0.1" value="2.5" />
+        </div>
+      </div>
+
+      <div class="row cols3 mt8">
+        <div class="toggle">
+          <input id="realToggle" type="checkbox" />
+          <span>Zobrazit reálné hodnoty (inflace)</span>
+        </div>
+        <div>
+          <label>Inflace (% p.a.)</label>
+          <input id="inflationRate" type="number" step="0.1" value="2.5" />
+        </div>
+        <div class="toggle">
+          <input id="perfDefault" type="checkbox" />
+          <span>Performance fee default (10% nad 8%)</span>
+        </div>
+      </div>
+
+      <hr />
+
+      <h2>Výběr fondu</h2>
+      <div class="hint">Vyber třídu aktiv → fond. SRI i výnos jsou editovatelné a lze je uložit do zařízení.</div>
+
+      <div class="row cols3 mt8">
+        <div>
+          <label>Třída aktiv</label>
+          <select id="assetClass"></select>
+        </div>
+        <div>
+          <label>Fond</label>
+          <select id="fundSelect"></select>
+        </div>
+        <div>
+          <label>Měna</label>
+          <select id="currency">
+            <option value="CZK">CZK</option>
+            <option value="EUR">EUR</option>
+            <option value="USD">USD</option>
+          </select>
+          <div class="small">U předdefinovaných fondů se měna nastaví automaticky.</div>
+        </div>
+      </div>
+
+      <div class="row cols3">
+        <div>
+          <label>Výnos (% p.a.)</label>
+          <input id="fundReturn" type="number" step="0.1" placeholder="např. 6.0" />
+        </div>
+        <div>
+          <label>SRI (1–7)</label>
+          <input id="fundSri" type="number" min="1" max="7" step="1" placeholder="např. 3" />
+        </div>
+        <div>
+          <label>Odkaz na web fondu</label>
+          <input id="fundUrl" placeholder="https://..." />
+        </div>
+      </div>
+
+      <div class="row cols3">
+        <div>
+          <label>Jednorázově</label>
+          <input id="lump" type="number" step="100" value="0" />
+        </div>
+        <div>
+          <label>Měsíčně</label>
+          <input id="monthly" type="number" step="100" value="0" />
+        </div>
+        <div>
+          <label>Vstupní poplatek (0–2,5%)</label>
+          <input id="entryFee" type="range" min="0" max="2.5" step="0.1" value="0" />
+          <div class="feeLine">
+            <span class="pill"><span id="entryFeeLbl">0.0</span>%</span>
+            <span class="small">na každý vklad</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row cols3 mt8">
+        <div class="toggle">
+          <input id="perfThis" type="checkbox" />
+          <span>Performance fee pro tento fond</span>
+        </div>
+        <div class="toggle">
+          <input id="customFundToggle" type="checkbox" />
+          <span>Vlastní fond (ručně napsat název)</span>
+        </div>
+        <div id="customFundWrap" class="hidden">
+          <label>Název vlastního fondu</label>
+          <input id="customFundName" placeholder="Napiš název fondu" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btnSaveDefaults" class="secondary">Uložit SRI/Výnos</button>
+        <button id="btnAdd">Přidat fond</button>
+        <button id="btnReset" class="danger">Reset</button>
+      </div>
+
+      <hr />
+
+      <h2>Portfolio</h2>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fond</th>
+              <th>Třída</th>
+              <th>Měna</th>
+              <th>SRI</th>
+              <th>Výnos %</th>
+              <th>Jednorázově</th>
+              <th>Měsíčně</th>
+              <th>Vstupní poplatek</th>
+              <th>Perf.</th>
+              <th>Web</th>
+              <th>Akce</th>
+            </tr>
+          </thead>
+          <tbody id="portfolioBody"></tbody>
+        </table>
+      </div>
+
+      <div class="actions mt8">
+        <button id="btnCalc">Vypočítat</button>
+      </div>
+
+      <div class="hint mt8">
+        Pozn.: Výnos je chápán jako už očištěný o správcovské poplatky. Performance fee (pokud zapnuto) = 10% z části výnosu nad 8% p.a.
+      </div>
+    </section>
+
+    <aside class="card">
+      <h2>Výsledek</h2>
+      <div class="kpis">
+        <div class="kpi">
+          <div class="kpi__t">Vloženo (brutto)</div>
+          <div class="kpi__v" id="kpiInvested">—</div>
+          <div class="kpi__s" id="kpiFees">Vstupní poplatky: —</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__t">KKIP portfolio</div>
+          <div class="kpi__v" id="kpiPortfolio">—</div>
+          <div class="kpi__s" id="kpiWavg">Vážený výnos / SRI: —</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__t">Spořicí účet</div>
+          <div class="kpi__v" id="kpiSavings">—</div>
+          <div class="kpi__s" id="kpiMode">Režim: nominální</div>
+        </div>
+      </div>
+
+      <hr />
+
+      <h2>Historie</h2>
+      <div class="actions">
+        <button id="btnClearHistory" class="secondary">Vymazat historii</button>
+      </div>
+      <div class="tableWrap mt8">
+        <table>
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Klient</th>
+              <th>Vloženo</th>
+              <th>KKIP</th>
+              <th>Spořák</th>
+              <th>Rozdíl</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+      <div class="small mt8">Ukládá se lokálně v prohlížeči (offline). Bez přihlášení.</div>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
