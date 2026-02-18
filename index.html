@@ -11,7 +11,7 @@
     <div class="hdr__top">
       <div>
         <div class="hdr__title">KKIP Portfolio Manager PRO</div>
-        <div class="hdr__sub">Interní nástroj • bez přihlášení • ukládá do zařízení</div>
+        <div class="hdr__sub">Interní nástroj • bez přihlášení • ukládá lokálně do zařízení</div>
       </div>
       <div class="hdr__badge">KKIP</div>
     </div>
@@ -29,6 +29,7 @@
         <div>
           <label>Jméno klienta</label>
           <input id="clientName" placeholder="Např. Jan Novák" />
+          <div class="small mt6">Tip: ulož klienta a později ho jen načti.</div>
         </div>
         <div>
           <label>Horizont (roky)</label>
@@ -40,7 +41,7 @@
         </div>
       </div>
 
-      <div class="row cols3 mt8">
+      <div class="row cols3 mt10">
         <div class="toggle">
           <input id="realToggle" type="checkbox" />
           <span>Zobrazit reálné hodnoty (inflace)</span>
@@ -50,17 +51,39 @@
           <input id="inflationRate" type="number" step="0.1" value="2.5" />
         </div>
         <div class="toggle">
-          <input id="perfDefault" type="checkbox" />
-          <span>Performance fee default (10% nad 8%)</span>
+          <input id="perfGlobalDefault" type="checkbox" />
+          <span>Performance fee default (10 % nad 8 % p.a.)</span>
         </div>
       </div>
 
-      <hr />
+      <div class="hr"></div>
+
+      <h2>Klienti</h2>
+      <div class="row cols3">
+        <div>
+          <label>Načíst uloženého klienta</label>
+          <select id="clientSelect"></select>
+          <div class="small mt6">Ukládá se jen do tohoto prohlížeče.</div>
+        </div>
+        <div class="actions" style="align-items:flex-end">
+          <button id="btnSaveClient" class="secondary">Uložit klienta</button>
+          <button id="btnLoadClient">Načíst</button>
+          <button id="btnDeleteClient" class="danger">Smazat</button>
+        </div>
+        <div class="actions" style="justify-content:flex-end; align-items:flex-end">
+          <button id="btnPDF" class="pdf">Vygenerovat PDF (4 strany)</button>
+        </div>
+      </div>
+
+      <div class="hr"></div>
 
       <h2>Výběr fondu</h2>
-      <div class="hint">Vyber třídu aktiv → fond. SRI i výnos jsou editovatelné a lze je uložit do zařízení.</div>
+      <div class="hint">
+        Vyber třídu aktiv → fond. SRI i výnos můžeš upravit a uložit.
+        Vstupní poplatek je „teploměr“ 0–2,5 % (aplikuje se na každý vklad).
+      </div>
 
-      <div class="row cols3 mt8">
+      <div class="row cols3 mt10">
         <div>
           <label>Třída aktiv</label>
           <select id="assetClass"></select>
@@ -76,7 +99,7 @@
             <option value="EUR">EUR</option>
             <option value="USD">USD</option>
           </select>
-          <div class="small">U předdefinovaných fondů se měna nastaví automaticky.</div>
+          <div class="small mt6">U předdefinovaných fondů se měna nastaví automaticky.</div>
         </div>
       </div>
 
@@ -98,14 +121,14 @@
       <div class="row cols3">
         <div>
           <label>Jednorázově</label>
-          <input id="lump" type="number" step="100" value="0" />
+          <input id="lump" type="number" min="0" step="100" value="0" />
         </div>
         <div>
           <label>Měsíčně</label>
-          <input id="monthly" type="number" step="100" value="0" />
+          <input id="monthly" type="number" min="0" step="100" value="0" />
         </div>
         <div>
-          <label>Vstupní poplatek (0–2,5%)</label>
+          <label>Vstupní poplatek (0–2,5 %)</label>
           <input id="entryFee" type="range" min="0" max="2.5" step="0.1" value="0" />
           <div class="feeLine">
             <span class="pill"><span id="entryFeeLbl">0.0</span>%</span>
@@ -114,10 +137,10 @@
         </div>
       </div>
 
-      <div class="row cols3 mt8">
+      <div class="row cols3 mt10">
         <div class="toggle">
-          <input id="perfThis" type="checkbox" />
-          <span>Performance fee pro tento fond</span>
+          <input id="perfThisFund" type="checkbox" />
+          <span>Performance fee pro tento fond (10 % nad 8 %)</span>
         </div>
         <div class="toggle">
           <input id="customFundToggle" type="checkbox" />
@@ -129,13 +152,13 @@
         </div>
       </div>
 
-      <div class="actions">
-        <button id="btnSaveDefaults" class="secondary">Uložit SRI/Výnos</button>
-        <button id="btnAdd">Přidat fond</button>
+      <div class="actions mt10">
+        <button id="btnSaveDefaults" class="secondary">Uložit SRI/Výnos (do zařízení)</button>
+        <button id="btnAddFund">Přidat fond</button>
         <button id="btnReset" class="danger">Reset</button>
       </div>
 
-      <hr />
+      <div class="hr"></div>
 
       <h2>Portfolio</h2>
       <div class="tableWrap">
@@ -159,17 +182,19 @@
         </table>
       </div>
 
-      <div class="actions mt8">
+      <div class="actions mt10">
         <button id="btnCalc">Vypočítat</button>
       </div>
 
-      <div class="hint mt8">
-        Pozn.: Výnos je chápán jako už očištěný o správcovské poplatky. Performance fee (pokud zapnuto) = 10% z části výnosu nad 8% p.a.
+      <div class="hint mt10">
+        Model „B“: roční kapitalizace (poradenské zjednodušení). Výnos fondu je chápán jako už očištěný o správcovské poplatky.
+        Performance fee (pokud zapnuto) = 10 % z části výnosu nad 8 % p.a.
       </div>
     </section>
 
     <aside class="card">
       <h2>Výsledek</h2>
+
       <div class="kpis">
         <div class="kpi">
           <div class="kpi__t">Vloženo (brutto)</div>
@@ -188,13 +213,35 @@
         </div>
       </div>
 
-      <hr />
+      <div class="hr"></div>
 
-      <h2>Historie</h2>
+      <h2>Graf projekce</h2>
+      <div class="chartBox">
+        <canvas id="lineChart" width="820" height="320"></canvas>
+        <div class="small mt6">KKIP portfolio vs spořicí účet (roční body)</div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h2>Alokace</h2>
+      <div class="row cols2 mt10">
+        <div class="chartBox">
+          <div class="small mb6"><strong>Třídy aktiv</strong></div>
+          <canvas id="pieClass" width="380" height="280"></canvas>
+        </div>
+        <div class="chartBox">
+          <div class="small mb6"><strong>Měny</strong></div>
+          <canvas id="pieCcy" width="380" height="280"></canvas>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h2>Historie simulací</h2>
       <div class="actions">
         <button id="btnClearHistory" class="secondary">Vymazat historii</button>
       </div>
-      <div class="tableWrap mt8">
+      <div class="tableWrap mt10">
         <table>
           <thead>
             <tr>
@@ -209,7 +256,10 @@
           <tbody id="historyBody"></tbody>
         </table>
       </div>
-      <div class="small mt8">Ukládá se lokálně v prohlížeči (offline). Bez přihlášení.</div>
+
+      <div class="small mt10">
+        Ukládá se lokálně v prohlížeči. Bez přihlášení.
+      </div>
     </aside>
   </main>
 
